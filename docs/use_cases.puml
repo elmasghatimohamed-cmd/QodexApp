@@ -1,0 +1,17 @@
+@startuml
+
+actor Etudiant
+actor Enseignant
+
+Etudiant --> (S_inscrire / Se connecter)
+Etudiant --> (Passer un quiz)
+Etudiant --> (Repondre aux questions)
+Etudiant --> (Voir ses resultats)
+
+Enseignant --> (S_inscrire / Se connecter)
+Enseignant --> (Creer une categorie)
+Enseignant --> (Creer un quiz)
+Enseignant --> (Ajouter des questions / reponses)
+Enseignant --> (Voir les resultats des etudiants)
+
+@enduml
