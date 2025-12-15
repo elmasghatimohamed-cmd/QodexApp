@@ -15,7 +15,8 @@ class UserRepository
 
     public function findAll()
     {
-        $stmt = $this->db->query("SELECT * FROM users WHERE deleted_at IS NULL");
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE deleted_at IS NULL");
+        $stmt->execute();
         $users = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $users[] = new User(

@@ -16,7 +16,8 @@ class CategoryRepository
 
     public function findAll()
     {
-        $stmt = $this->db->query("SELECT * FROM categories WHERE deleted_at IS NULL");
+        $stmt = $this->db->prepare("SELECT * FROM categories WHERE deleted_at IS NULL");
+        $stmt->execute();
         $categories = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $categories[] = new Category($row);

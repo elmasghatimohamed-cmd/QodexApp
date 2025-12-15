@@ -14,7 +14,8 @@ class QuizRepository
     }
     public function findAll()
     {
-        $stmt = $this->db->query("SELECT * FROM quizzes WHERE deleted_at IS NULL");
+        $stmt = $this->db->prepare("SELECT * FROM quizzes WHERE deleted_at IS NULL");
+        $stmt->execute();
         $quizzes = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $quizzes[] = new Quiz($row);

@@ -15,7 +15,8 @@ class StudentAnswerRepository
 
     public function findAll()
     {
-        $stmt = $this->db->query("SELECT * FROM student_answers");
+        $stmt = $this->db->prepare("SELECT * FROM student_answers");
+        $stmt->execute();
         $answers = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $answers[] = new StudentAnswer($row);
