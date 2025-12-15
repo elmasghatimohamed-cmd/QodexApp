@@ -12,7 +12,8 @@ class AnswerRepository
     }
     public function findAll()
     {
-        $stmt = $this->db->query("SELECT * FROM answers WHERE deleted_at IS NULL");
+        $stmt = $this->db->prepare("SELECT * FROM answers WHERE deleted_at IS NULL");
+        $stmt->execute();
         $answers = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $answers[] = new Answer($row);

@@ -15,7 +15,8 @@ class ResultRepository
 
     public function findAll()
     {
-        $stmt = $this->db->query("SELECT * FROM results");
+        $stmt = $this->db->prepare("SELECT * FROM results");
+        $stmt->execute();
         $results = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $results[] = new Result($row);

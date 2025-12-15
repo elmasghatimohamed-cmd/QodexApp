@@ -15,7 +15,8 @@ class QuestionRepository
 
     public function findAll()
     {
-        $stmt = $this->db->query("SELECT * FROM questions WHERE deleted_at IS NULL");
+        $stmt = $this->db->prepare("SELECT * FROM questions WHERE deleted_at IS NULL");
+        $stmt->execute();
         $questions = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $questions[] = new Question($row);
