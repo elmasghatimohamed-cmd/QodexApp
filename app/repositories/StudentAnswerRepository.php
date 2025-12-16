@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repositories;
-use App\models\StudentAnswer;
+use App\Models\StudentAnswer;
 use PDO;
 
 class StudentAnswerRepository

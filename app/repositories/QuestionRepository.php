@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repositories;
-use App\models\Question;
+use App\Models\Question;
 use PDO;
 
 class QuestionRepository

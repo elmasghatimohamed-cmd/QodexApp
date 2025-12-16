@@ -1,7 +1,7 @@
 <?php
 namespace App\Repositories;
 
-use App\models\User;
+use App\Models\User;
 use PDO;
 
 class UserRepository
