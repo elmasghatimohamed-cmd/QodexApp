@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repositories;
-use App\models\Result;
+use App\Models\Result;
 use PDO;
 
 class ResultRepository

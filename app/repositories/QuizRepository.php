@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repositories;
-use App\models\Quiz;
+use App\Models\Quiz;
 use PDO;
 
 class QuizRepository

@@ -1,6 +1,6 @@
 <?php
 namespace App\Repositories;
-use App\models\Answer;
+use App\Models\Answer;
 use PDO;
 class AnswerRepository
 {
