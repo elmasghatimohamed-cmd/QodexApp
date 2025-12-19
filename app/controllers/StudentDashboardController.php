@@ -44,7 +44,7 @@ class StudentDashboardController extends BaseController
         }
 
         $this->view('student/dashboard', [
-            'availableQuizzes' => count($availableQuizzes),
+            'availableQuizzes' => $availableQuizzes,
             'totalAttempts' => $totalAttempts,
             'averageScore' => $averageScore,
             'recentAttempts' => $recentAttempts,

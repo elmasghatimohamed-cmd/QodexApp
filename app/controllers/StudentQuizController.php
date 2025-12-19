@@ -118,7 +118,6 @@ class StudentQuizController extends BaseController
 
             if ($question->type_question === 'reponse_courte') {
                 $reponseTexte = Security::sanitize($provided);
-                // For short answers, teacher review needed; set false by default
                 $isCorrect = false;
             } else {
                 $answerId = (int) $provided;

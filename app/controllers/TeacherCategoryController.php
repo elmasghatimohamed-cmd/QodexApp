@@ -44,7 +44,7 @@ class TeacherCategoryController extends BaseController
 
         $this->view('teacher/category/create', [
             'error' => Session::getError(),
-            'success' => Session::getError()
+            'success' => Session::getSuccess()
         ]);
     }
 

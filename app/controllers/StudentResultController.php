@@ -22,9 +22,20 @@ class StudentResultController extends BaseController
         AuthMiddleware::handle();
         RoleMiddleware::handle('etudiant');
 
-        $attempts = $this->attempts->findByEtudiant(Session::getUserId(), 50, 0);
+        $studentId = Session::getUserId();
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $limit = 20;
+        $offset = ($page - 1) * $limit;
+
+        $total = $this->attempts->countForStudent($studentId);
+        $totalPages = (int) ceil($total / $limit);
+
+        $attempts = $this->attempts->findForStudentWithQuiz($studentId, $limit, $offset);
+
         $this->view('student/results/index', [
             'attempts' => $attempts,
+            'page' => $page,
+            'totalPages' => $totalPages,
             'error' => Session::getError(),
             'success' => Session::getSuccess()
         ]);
