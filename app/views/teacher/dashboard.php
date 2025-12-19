@@ -1,3 +1,4 @@
+<?php use App\Middleware\CSRFMiddleware; ?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -5,222 +6,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Enseignant</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-card h3 {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .stat-card .number {
-            font-size: 36px;
-            font-weight: bold;
-            color: #2563eb;
-        }
-
-        .recent-section {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .recent-section h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .quiz-item {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .quiz-item:last-child {
-            border-bottom: none;
-        }
-
-        .quiz-title {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .quiz-meta {
-            color: #666;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .status {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-        }
-
-        .status.actif {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status.inactif {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #2563eb;
-            padding: 8px 16px;
-            border-radius: 4px;
-            background: #eff6ff;
-        }
-
-        .nav-links a:hover {
-            background: #dbeafe;
-        }
-
-        .alert {
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-
-        .alert.success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .alert.error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        .logout {
-            background: #dc2626;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-
-        .logout:hover {
-            background: #b91c1c;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Dashboard Enseignant</h1>
-            <div class="nav-links">
-                <a href="/teacher/categories">Mes Catégories</a>
-                <a href="/teacher/quizzes">Mes Quiz</a>
-                <a href="/teacher/results">Résultats</a>
-                <a href="/logout" class="logout">Déconnexion</a>
+<body class="bg-slate-50 min-h-screen">
+    <div class="max-w-6xl mx-auto py-10 px-4 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-semibold text-slate-900">Dashboard Enseignant</h1>
+                <p class="text-sm text-slate-600">Gestion des catégories, quiz et résultats.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="/teacher/categories"
+                    class="rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50">Catégories</a>
+                <a href="/teacher/quizzes"
+                    class="rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50">Quiz</a>
+                <a href="/teacher/quizzes/results"
+                    class="rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50">Résultats</a>
+                <form method="POST" action="/logout">
+                    <input type="hidden" name="csrf_token" value="<?= CSRFMiddleware::getToken(); ?>">
+                    <button type="submit"
+                        class="rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700">Déconnexion</button>
+                </form>
             </div>
         </div>
 
-        <?php if ($error): ?>
-            <div class="alert error"><?= htmlspecialchars($error) ?></div>
+        <?php if (!empty($error)): ?>
+            <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                <?= htmlspecialchars($error) ?>
+            </div>
         <?php endif; ?>
 
-        <?php if ($success): ?>
-            <div class="alert success"><?= htmlspecialchars($success) ?></div>
+        <?php if (!empty($success)): ?>
+            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+                <?= htmlspecialchars($success) ?>
+            </div>
         <?php endif; ?>
 
-        <div class="stats">
-            <div class="stat-card">
-                <h3>Total Quiz</h3>
-                <div class="number"><?= $totalQuizzes ?></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="text-sm text-slate-600">Total quiz</div>
+                <div class="mt-2 text-3xl font-semibold text-slate-900"><?= (int) $totalQuizzes ?></div>
             </div>
-            <div class="stat-card">
-                <h3>Quiz Actifs</h3>
-                <div class="number"><?= $activeQuizzes ?></div>
+            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="text-sm text-slate-600">Quiz actifs</div>
+                <div class="mt-2 text-3xl font-semibold text-slate-900"><?= (int) $activeQuizzes ?></div>
             </div>
-            <div class="stat-card">
-                <h3>Catégories</h3>
-                <div class="number"><?= $totalCategories ?></div>
+            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="text-sm text-slate-600">Catégories</div>
+                <div class="mt-2 text-3xl font-semibold text-slate-900"><?= (int) $totalCategories ?></div>
             </div>
-            <div class="stat-card">
-                <h3>Total Tentatives</h3>
-                <div class="number"><?= $totalAttempts ?></div>
+            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="text-sm text-slate-600">Tentatives</div>
+                <div class="mt-2 text-3xl font-semibold text-slate-900"><?= (int) $totalAttempts ?></div>
             </div>
         </div>
 
-        <div class="recent-section">
-            <h2>Quiz Récents</h2>
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+                <h2 class="font-semibold text-slate-900">Quiz récents</h2>
+                <a href="/teacher/quizzes/create" class="text-sm font-medium text-blue-600 hover:underline">Créer un
+                    quiz</a>
+            </div>
+
             <?php if (empty($recentQuizzes)): ?>
-                <p style="color: #666; padding: 20px 0;">Aucun quiz créé pour le moment.</p>
-                <a href="/teacher/quizzes/create"
-                    style="display: inline-block; background: #2563eb; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none;">Créer
-                    mon premier quiz</a>
+                <div class="p-5 text-sm text-slate-700">Aucun quiz créé pour le moment.</div>
             <?php else: ?>
-                <?php foreach ($recentQuizzes as $quiz): ?>
-                    <div class="quiz-item">
-                        <div>
-                            <div class="quiz-title"><?= htmlspecialchars($quiz->title) ?></div>
-                            <div class="quiz-meta">
-                                Créé le <?= date('d/m/Y', strtotime($quiz->created_at)) ?>
-                                <?php if ($quiz->duration): ?>
-                                    • Durée: <?= $quiz->duration ?> min
-                                <?php endif; ?>
+                <div class="divide-y divide-slate-200">
+                    <?php foreach ($recentQuizzes as $quiz): ?>
+                        <div class="flex items-start justify-between gap-4 p-5">
+                            <div>
+                                <div class="font-semibold text-slate-900"><?= htmlspecialchars($quiz->title) ?></div>
+                                <div class="mt-1 text-sm text-slate-600">
+                                    Créé le <?= htmlspecialchars(date('d/m/Y', strtotime($quiz->created_at))) ?>
+                                    <?php if ($quiz->duration): ?>
+                                        • Durée: <?= (int) $quiz->duration ?> min
+                                    <?php endif; ?>
+                                </div>
                             </div>
+                            <span
+                                class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold <?= $quiz->status === 'actif' ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-700' ?>">
+                                <?= htmlspecialchars($quiz->status) ?>
+                            </span>
                         </div>
-                        <span class="status <?= $quiz->status ?>">
-                            <?= $quiz->status === 'actif' ? 'Actif' : 'Inactif' ?>
-                        </span>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </div>
             <?php endif; ?>
         </div>
     </div>

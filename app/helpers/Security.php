@@ -26,15 +26,38 @@ class Security
             session_start();
         }
 
-        if (!isset($_SESSION['csrf_token'])) {
-            return false;
-        }
-        if (isset($_SESSION['csrf_token_time']) && time() - $_SESSION['csrf_token_time'] > 3600) {
-            unset($_SESSION['csrf_token'], $_SESSION['csrf_token_time']);
+        if (!is_string($token) || $token === '') {
             return false;
         }
 
-        return hash_equals($_SESSION['csrf_token'], $token);
+        if (isset($_SESSION['csrf_token']) && !isset($_SESSION['csrf_tokens'])) {
+            $_SESSION['csrf_tokens'] = [
+                $_SESSION['csrf_token'] => $_SESSION['csrf_token_time'] ?? time()
+            ];
+            unset($_SESSION['csrf_token'], $_SESSION['csrf_token_time']);
+        }
+
+        if (!isset($_SESSION['csrf_tokens']) || !is_array($_SESSION['csrf_tokens'])) {
+            return false;
+        }
+
+        $ttlSeconds = 3600;
+        $now = time();
+
+        foreach ($_SESSION['csrf_tokens'] as $t => $ts) {
+            if (!is_int($ts) || ($now - $ts) > $ttlSeconds) {
+                unset($_SESSION['csrf_tokens'][$t]);
+            }
+        }
+
+        foreach ($_SESSION['csrf_tokens'] as $storedToken => $ts) {
+            if (hash_equals($storedToken, $token)) {
+                unset($_SESSION['csrf_tokens'][$storedToken]);
+                return true;
+            }
+        }
+
+        return false;
     }
     public static function escape($data, $flags = ENT_QUOTES, $encoding = 'UTF-8')
     {

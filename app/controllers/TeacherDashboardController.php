@@ -30,22 +30,18 @@ class TeacherDashboardController extends BaseController
 
         $enseignantId = Session::getUserId();
 
-        // Statistiques
         $allQuizzes = $this->quizzes->findByEnseignant($enseignantId);
         $allCategories = $this->categories->findByEnseignant($enseignantId);
 
         $totalQuizzes = count($allQuizzes);
         $totalCategories = count($allCategories);
 
-        // Quiz actifs
         $activeQuizzes = array_filter($allQuizzes, function ($quiz) {
             return $quiz->status === 'actif';
         });
 
-        // Derniers quiz créés (5 plus récents)
         $recentQuizzes = array_slice($allQuizzes, 0, 5);
 
-        // Total tentatives sur mes quiz
         $totalAttempts = 0;
         foreach ($allQuizzes as $quiz) {
             $quizAttempts = $this->attempts->findByQuizForTeacher($quiz->id, $enseignantId, 1000, 0);
