@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+
 use App\Models\Quiz;
 use PDO;
 
@@ -12,7 +13,8 @@ class QuizRepository
     {
         $this->db = $db;
     }
-    public function findAll()
+
+    public function findAll(): array
     {
         $stmt = $this->db->prepare("SELECT * FROM quizzes WHERE deleted_at IS NULL");
         $stmt->execute();
@@ -22,7 +24,8 @@ class QuizRepository
         }
         return $quizzes;
     }
-    public function findById($id)
+
+    public function findById($id): ?Quiz
     {
         $stmt = $this->db->prepare("SELECT * FROM quizzes WHERE id = :id AND deleted_at IS NULL");
         $stmt->execute(['id' => $id]);
@@ -30,7 +33,8 @@ class QuizRepository
 
         return $row ? new Quiz($row) : null;
     }
-    public function findByEnseignant($enseignantId)
+
+    public function findByEnseignant($enseignantId): array
     {
         $stmt = $this->db->prepare("SELECT * FROM quizzes WHERE enseignant_id = :enseignant_id AND deleted_at IS NULL");
         $stmt->execute(['enseignant_id' => $enseignantId]);
@@ -41,7 +45,7 @@ class QuizRepository
         return $quizzes;
     }
 
-    public function findByCategory($categoryId)
+    public function findByCategory($categoryId): array
     {
         $stmt = $this->db->prepare("SELECT * FROM quizzes WHERE categorie_id = :categorie_id AND deleted_at IS NULL");
         $stmt->execute(['categorie_id' => $categoryId]);
@@ -51,7 +55,8 @@ class QuizRepository
         }
         return $quizzes;
     }
-    public function findByStatus($status)
+
+    public function findByStatus($status): array
     {
         $stmt = $this->db->prepare("SELECT * FROM quizzes WHERE status = :status AND deleted_at IS NULL");
         $stmt->execute(['status' => $status]);
@@ -61,7 +66,8 @@ class QuizRepository
         }
         return $quizzes;
     }
-    public function findActiveByCategoryId($categoryId)
+
+    public function findActiveByCategoryId($categoryId): array
     {
         $stmt = $this->db->prepare(
             "SELECT * FROM quizzes 
@@ -76,7 +82,8 @@ class QuizRepository
         }
         return $quizzes;
     }
-    public function create(Quiz $quiz)
+
+    public function create(Quiz $quiz): int
     {
         $stmt = $this->db->prepare(
             "INSERT INTO quizzes (title, description, categorie_id, enseignant_id, status, duration, created_at) 
@@ -92,9 +99,10 @@ class QuizRepository
             'duration' => $quiz->duration
         ]);
 
-        return $this->db->lastInsertId();
+        return (int) $this->db->lastInsertId();
     }
-    public function update(Quiz $quiz)
+
+    public function update(Quiz $quiz): bool
     {
         $stmt = $this->db->prepare(
             "UPDATE quizzes SET 
@@ -117,7 +125,7 @@ class QuizRepository
         ]);
     }
 
-    public function delete($id)
+    public function delete($id): bool
     {
         $stmt = $this->db->prepare("UPDATE quizzes SET deleted_at = NOW() WHERE id = :id");
         return $stmt->execute(['id' => $id]);

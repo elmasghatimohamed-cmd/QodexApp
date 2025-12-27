@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Repositories;
+
 use App\Models\Answer;
 use PDO;
+
 class AnswerRepository
 {
     private $db;
@@ -10,7 +13,8 @@ class AnswerRepository
     {
         $this->db = $db;
     }
-    public function findAll()
+
+    public function findAll(): array
     {
         $stmt = $this->db->prepare("SELECT * FROM answers WHERE deleted_at IS NULL");
         $stmt->execute();
@@ -21,7 +25,7 @@ class AnswerRepository
         return $answers;
     }
 
-    public function findById($id)
+    public function findById($id): ?Answer
     {
         $stmt = $this->db->prepare("SELECT * FROM answers WHERE id = :id AND deleted_at IS NULL");
         $stmt->execute(['id' => $id]);
@@ -29,7 +33,8 @@ class AnswerRepository
 
         return $row ? new Answer($row) : null;
     }
-    public function findByQuestion($questionId)
+
+    public function findByQuestion($questionId): array
     {
         $stmt = $this->db->prepare("SELECT * FROM answers WHERE question_id = :question_id AND deleted_at IS NULL");
         $stmt->execute(['question_id' => $questionId]);
@@ -39,37 +44,38 @@ class AnswerRepository
         }
         return $answers;
     }
-        public function findCorrectAnswersByQuestion($questionId)
-        {
-            $stmt = $this->db->prepare(
-                "SELECT * FROM answers 
-                 WHERE question_id = :question_id AND is_correct = 1 AND deleted_at IS NULL"
-            );
-            $stmt->execute(['question_id' => $questionId]);
-            $answers = [];
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $answers[] = new Answer($row);
-            }
-            return $answers;
+
+    public function findCorrectAnswersByQuestion($questionId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT * FROM answers 
+             WHERE question_id = :question_id AND is_correct = 1 AND deleted_at IS NULL"
+        );
+        $stmt->execute(['question_id' => $questionId]);
+        $answers = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $answers[] = new Answer($row);
         }
-    
-        public function findAnswersByQuiz(int $quizId): array
-        {
-            $stmt = $this->db->prepare(
-                "SELECT a.* FROM answers a 
-                 JOIN questions q ON a.question_id = q.id 
-                 WHERE q.quiz_id = :quiz_id AND a.deleted_at IS NULL"
-            );
-            $stmt->execute(['quiz_id' => $quizId]);
-            $answers = [];
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $answers[] = new Answer($row);
-            }
-            return $answers;
+        return $answers;
+    }
+
+    public function findAnswersByQuiz(int $quizId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT a.* FROM answers a 
+             JOIN questions q ON a.question_id = q.id 
+             WHERE q.quiz_id = :quiz_id AND a.deleted_at IS NULL"
+        );
+        $stmt->execute(['quiz_id' => $quizId]);
+        $answers = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $answers[] = new Answer($row);
         }
-    
-        public function create(Answer $answer)
-        {
+        return $answers;
+    }
+
+    public function create(Answer $answer): int
+    {
         $stmt = $this->db->prepare(
             "INSERT INTO answers (question_id, text, is_correct, created_at) 
              VALUES (:question_id, :text, :is_correct, NOW())"
@@ -81,9 +87,10 @@ class AnswerRepository
             'is_correct' => $answer->is_correct ? 1 : 0
         ]);
 
-        return $this->db->lastInsertId();
+        return (int) $this->db->lastInsertId();
     }
-    public function update(Answer $answer)
+
+    public function update(Answer $answer): bool
     {
         $stmt = $this->db->prepare(
             "UPDATE answers SET 
@@ -99,7 +106,7 @@ class AnswerRepository
         ]);
     }
 
-    public function delete($id)
+    public function delete($id): bool
     {
         $stmt = $this->db->prepare("UPDATE answers SET deleted_at = NOW() WHERE id = :id");
         return $stmt->execute(['id' => $id]);

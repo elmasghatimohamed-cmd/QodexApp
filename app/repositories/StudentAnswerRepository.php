@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+
 use App\Models\StudentAnswer;
 use PDO;
 
@@ -13,7 +14,7 @@ class StudentAnswerRepository
         $this->db = $db;
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         $stmt = $this->db->prepare("SELECT * FROM student_answers");
         $stmt->execute();
@@ -23,7 +24,8 @@ class StudentAnswerRepository
         }
         return $answers;
     }
-    public function findById($id)
+
+    public function findById($id): ?StudentAnswer
     {
         $stmt = $this->db->prepare("SELECT * FROM student_answers WHERE id = :id");
         $stmt->execute(['id' => $id]);
@@ -31,7 +33,8 @@ class StudentAnswerRepository
 
         return $row ? new StudentAnswer($row) : null;
     }
-    public function findByStudentQuiz($studentQuizId)
+
+    public function findByStudentQuiz($studentQuizId): array
     {
         $stmt = $this->db->prepare("SELECT * FROM student_answers WHERE student_quiz_id = :student_quiz_id");
         $stmt->execute(['student_quiz_id' => $studentQuizId]);
@@ -41,7 +44,8 @@ class StudentAnswerRepository
         }
         return $answers;
     }
-    public function findByStudentQuizAndQuestion($studentQuizId, $questionId)
+
+    public function findByStudentQuizAndQuestion($studentQuizId, $questionId): ?StudentAnswer
     {
         $stmt = $this->db->prepare(
             "SELECT * FROM student_answers 
@@ -55,7 +59,8 @@ class StudentAnswerRepository
 
         return $row ? new StudentAnswer($row) : null;
     }
-    public function countCorrectAnswersByStudentQuiz($studentQuizId)
+
+    public function countCorrectAnswersByStudentQuiz($studentQuizId): int
     {
         $stmt = $this->db->prepare(
             "SELECT COUNT(*) as total FROM student_answers 
@@ -63,9 +68,10 @@ class StudentAnswerRepository
         );
         $stmt->execute(['student_quiz_id' => $studentQuizId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'] ?? 0;
+        return (int) ($result['total'] ?? 0);
     }
-    public function calculateScoreByStudentQuiz($studentQuizId)
+
+    public function calculateScoreByStudentQuiz($studentQuizId): int
     {
         $stmt = $this->db->prepare(
             "SELECT SUM(q.points) as score 
@@ -75,9 +81,10 @@ class StudentAnswerRepository
         );
         $stmt->execute(['student_quiz_id' => $studentQuizId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['score'] ?? 0;
+        return (int) ($result['score'] ?? 0);
     }
-    public function create(StudentAnswer $studentAnswer)
+
+    public function create(StudentAnswer $studentAnswer): int
     {
         $stmt = $this->db->prepare(
             "INSERT INTO student_answers (student_quiz_id, question_id, answer_id, reponse_texte, is_correct, created_at) 
@@ -92,9 +99,10 @@ class StudentAnswerRepository
             'is_correct' => $studentAnswer->is_correct ? 1 : 0
         ]);
 
-        return $this->db->lastInsertId();
+        return (int) $this->db->lastInsertId();
     }
-    public function update(StudentAnswer $studentAnswer)
+
+    public function update(StudentAnswer $studentAnswer): bool
     {
         $stmt = $this->db->prepare(
             "UPDATE student_answers SET 
@@ -111,12 +119,14 @@ class StudentAnswerRepository
             'is_correct' => $studentAnswer->is_correct ? 1 : 0
         ]);
     }
-    public function delete($id)
+
+    public function delete($id): bool
     {
         $stmt = $this->db->prepare("DELETE FROM student_answers WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
-    public function deleteByStudentQuiz($studentQuizId)
+
+    public function deleteByStudentQuiz($studentQuizId): bool
     {
         $stmt = $this->db->prepare("DELETE FROM student_answers WHERE student_quiz_id = :student_quiz_id");
         return $stmt->execute(['student_quiz_id' => $studentQuizId]);

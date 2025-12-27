@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 class StudentAnswer
 {
     public $id;
@@ -22,7 +23,7 @@ class StudentAnswer
         $this->created_at = $data['created_at'] ?? null;
     }
 
-    public function setCorrect(bool $correct)
+    public function setCorrect(bool $correct): void
     {
         $this->is_correct = $correct;
     }

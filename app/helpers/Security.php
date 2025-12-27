@@ -3,71 +3,41 @@
 namespace App\Helpers;
 
 use PDOException;
+
 class Security
 {
-    public static function generateCSRFToken()
+    public static function generateCSRFToken(): string
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        if (
-            !isset($_SESSION['csrf_token']) ||
-            isset($_SESSION['csrf_token_time']) && time() - $_SESSION['csrf_token_time'] > 3600
-        ) {
+
+        if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            $_SESSION['csrf_token_time'] = time();
         }
 
         return $_SESSION['csrf_token'];
     }
-    public static function verifyCSRFToken($token)
+
+
+    public static function verifyCSRFToken(?string $token): bool
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        if (!is_string($token) || $token === '') {
+        if (
+            empty($token) ||
+            empty($_SESSION['csrf_token']) ||
+            !hash_equals($_SESSION['csrf_token'], $token)
+        ) {
             return false;
         }
 
-        if (isset($_SESSION['csrf_token']) && !isset($_SESSION['csrf_tokens'])) {
-            $_SESSION['csrf_tokens'] = [
-                $_SESSION['csrf_token'] => $_SESSION['csrf_token_time'] ?? time()
-            ];
-            unset($_SESSION['csrf_token'], $_SESSION['csrf_token_time']);
-        }
-
-        if (!isset($_SESSION['csrf_tokens']) || !is_array($_SESSION['csrf_tokens'])) {
-            return false;
-        }
-
-        $ttlSeconds = 3600;
-        $now = time();
-
-        foreach ($_SESSION['csrf_tokens'] as $t => $ts) {
-            if (!is_int($ts) || ($now - $ts) > $ttlSeconds) {
-                unset($_SESSION['csrf_tokens'][$t]);
-            }
-        }
-
-        foreach ($_SESSION['csrf_tokens'] as $storedToken => $ts) {
-            if (hash_equals($storedToken, $token)) {
-                unset($_SESSION['csrf_tokens'][$storedToken]);
-                return true;
-            }
-        }
-
-        return false;
+        return true;
     }
-    public static function escape($data, $flags = ENT_QUOTES, $encoding = 'UTF-8')
-    {
-        if (is_array($data)) {
-            return array_map(function ($item) use ($flags, $encoding) {
-                return self::escape($item, $flags, $encoding);
-            }, $data);
-        }
-        return htmlspecialchars($data, $flags, $encoding);
-    }
+
+
     public static function sanitize($data)
     {
         if (is_array($data)) {
@@ -75,7 +45,8 @@ class Security
         }
         return trim(strip_tags($data));
     }
-    public static function hashPassword($password)
+
+    public static function hashPassword($password): string
     {
         return password_hash($password, PASSWORD_ARGON2ID, [
             'memory_cost' => 65536,
@@ -83,11 +54,13 @@ class Security
             'threads' => 3
         ]);
     }
-    public static function verifyPassword($password, $hash)
+
+    public static function verifyPassword($password, $hash): bool
     {
         return password_verify($password, $hash);
     }
-    public static function validatePasswordStrength($password)
+
+    public static function validatePasswordStrength($password): array
     {
         $errors = [];
 
@@ -109,7 +82,8 @@ class Security
 
         return $errors;
     }
-    public static function checkBruteForce($identifier, $maxAttempts = 5, $timeWindow = 900)
+
+    public static function checkBruteForce($identifier, $maxAttempts = 5, $timeWindow = 900): bool
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -139,7 +113,8 @@ class Security
 
         return false;
     }
-    public static function recordFailedLogin($identifier)
+
+    public static function recordFailedLogin($identifier): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -156,7 +131,8 @@ class Security
 
         $_SESSION[$key]['count']++;
     }
-    public static function resetLoginAttempts($identifier)
+
+    public static function resetLoginAttempts($identifier): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -165,7 +141,8 @@ class Security
         $key = 'login_attempts_' . md5($identifier);
         unset($_SESSION[$key]);
     }
-    public static function logSecurityEvent($db, $userId, $action, $details = '')
+
+    public static function logSecurityEvent($db, $userId, $action, $details = ''): void
     {
         try {
             $stmt = $db->prepare(
@@ -184,7 +161,8 @@ class Security
             error_log("Erreur lors de l'enregistrement du log de sécurité: " . $e->getMessage());
         }
     }
-    public static function setSecurityHeaders()
+
+    public static function setSecurityHeaders(): void
     {
         header('X-Frame-Options: DENY');
         header('X-Content-Type-Options: nosniff');
@@ -192,13 +170,14 @@ class Security
         header('Referrer-Policy: strict-origin-when-cross-origin');
         header('Content-Security-Policy: default-src \'self\'; script-src \'self\' \'unsafe-inline\'; style-src \'self\' \'unsafe-inline\';');
     }
-    public static function validateEmail($email)
+
+    public static function validateEmail($email): bool
     {
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
-    public static function generateToken($length = 32)
+
+    public static function generateToken($length = 32): string
     {
         return bin2hex(random_bytes($length));
     }
 }
-

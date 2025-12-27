@@ -20,7 +20,7 @@ class StudentDashboardController extends BaseController
         $this->attempts = new StudentQuizRepository($db);
     }
 
-    public function index()
+    public function index(): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('etudiant');
@@ -28,6 +28,7 @@ class StudentDashboardController extends BaseController
         $studentId = Session::getUserId();
 
         $availableQuizzes = $this->quizzes->findByStatus('actif');
+        $availableQuizzesCount = count($availableQuizzes);
 
         $myAttempts = $this->attempts->findByEtudiant($studentId, 1000, 0);
         $totalAttempts = count($myAttempts);
@@ -44,7 +45,7 @@ class StudentDashboardController extends BaseController
         }
 
         $this->view('student/dashboard', [
-            'availableQuizzes' => $availableQuizzes,
+            'availableQuizzes' => $availableQuizzesCount,
             'totalAttempts' => $totalAttempts,
             'averageScore' => $averageScore,
             'recentAttempts' => $recentAttempts,

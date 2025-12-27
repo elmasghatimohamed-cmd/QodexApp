@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 class User
 {
     public $id;
@@ -14,11 +16,11 @@ class User
     public $last_login;
 
     public function __construct(
-        $email,
-        $password,
-        $first_name,
-        $last_name,
-        $role,
+        string $email,
+        string $password,
+        string $first_name,
+        string $last_name,
+        string $role,
         $id = null,
         $created_at = null,
         $updated_at = null,

@@ -5,33 +5,153 @@
 <head>
     <meta charset="UTF-8">
     <title>Modifier un quiz</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        input,
+        textarea,
+        select {
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-secondary {
+            border: 1px solid #d1d5db;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #374151;
+            background: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f3f4f6;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50 min-h-screen">
-    <div class="max-w-4xl mx-auto py-10 px-4">
-        <h1 class="text-2xl font-semibold text-gray-800 mb-4">Modifier un quiz</h1>
+<body>
+    <div class="container">
+        <h1>Modifier un quiz</h1>
+
         <?php if (!empty($error)): ?>
-            <div class="mb-3 rounded bg-red-50 text-red-700 px-3 py-2 text-sm"><?= htmlspecialchars($error) ?></div>
+            <div class="alert-error">
+                <?= htmlspecialchars($error) ?>
+            </div>
         <?php endif; ?>
-        <form method="POST" action="/teacher/quizzes/edit" class="space-y-4 bg-white shadow rounded-lg p-6">
+
+        <form method="POST" action="/teacher/quizzes" class="card">
             <input type="hidden" name="csrf_token" value="<?= CSRFMiddleware::getToken(); ?>">
             <input type="hidden" name="id" value="<?= htmlspecialchars($quiz->id) ?>">
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Titre</label>
-                <input type="text" name="title" value="<?= htmlspecialchars($quiz->title) ?>" required
-                    class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+
+            <div class="field">
+                <label>Titre</label>
+                <input type="text" name="title" value="<?= htmlspecialchars($quiz->title) ?>" required>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea name="description"
-                    class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"><?= htmlspecialchars($quiz->description) ?></textarea>
+
+            <div class="field">
+                <label>Description</label>
+                <textarea name="description"><?= htmlspecialchars($quiz->description) ?></textarea>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Catégorie</label>
-                    <select name="categorie_id" required
-                        class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+
+            <div class="grid-3">
+                <div class="field">
+                    <label>Catégorie</label>
+                    <select name="categorie_id" required>
                         <?php foreach ($categories as $cat): ?>
                             <option value="<?= $cat->id ?>" <?= $quiz->categorie_id == $cat->id ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($cat->name) ?>
@@ -39,25 +159,24 @@
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Status</label>
-                    <select name="status"
-                        class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+
+                <div class="field">
+                    <label>Status</label>
+                    <select name="status">
                         <option value="actif" <?= $quiz->status === 'actif' ? 'selected' : '' ?>>Actif</option>
                         <option value="inactif" <?= $quiz->status === 'inactif' ? 'selected' : '' ?>>Inactif</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Durée (minutes)</label>
-                    <input type="number" name="duration" value="<?= htmlspecialchars($quiz->duration) ?>" min="1"
-                        class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+
+                <div class="field">
+                    <label>Durée (minutes)</label>
+                    <input type="number" name="duration" value="<?= htmlspecialchars($quiz->duration) ?>" min="1">
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button type="submit"
-                    class="inline-flex items-center rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">Enregistrer</button>
-                <a href="/teacher/quizzes"
-                    class="inline-flex items-center rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50">Retour</a>
+
+            <div class="actions">
+                <button type="submit" class="btn-primary">Enregistrer</button>
+                <a href="/teacher/quizzes" class="btn-secondary">Retour</a>
             </div>
         </form>
     </div>

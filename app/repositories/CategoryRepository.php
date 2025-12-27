@@ -14,7 +14,7 @@ class CategoryRepository
         $this->db = $db;
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         $stmt = $this->db->prepare("SELECT * FROM categories WHERE deleted_at IS NULL");
         $stmt->execute();
@@ -25,7 +25,7 @@ class CategoryRepository
         return $categories;
     }
 
-    public function findById($id)
+    public function findById($id): ?Category
     {
         $stmt = $this->db->prepare("SELECT * FROM categories WHERE id = :id AND deleted_at IS NULL");
         $stmt->execute(['id' => $id]);
@@ -34,7 +34,7 @@ class CategoryRepository
         return $row ? new Category($row) : null;
     }
 
-    public function findByEnseignant($enseignantId)
+    public function findByEnseignant($enseignantId): array
     {
         $stmt = $this->db->prepare("SELECT * FROM categories WHERE enseignant_id = :enseignant_id AND deleted_at IS NULL");
         $stmt->execute(['enseignant_id' => $enseignantId]);
@@ -45,7 +45,7 @@ class CategoryRepository
         return $categories;
     }
 
-    public function create(Category $category)
+    public function create(Category $category): int
     {
         $stmt = $this->db->prepare(
             "INSERT INTO categories (name, description, enseignant_id, created_at) 
@@ -58,10 +58,10 @@ class CategoryRepository
             'enseignant_id' => $category->enseignant_id
         ]);
 
-        return $this->db->lastInsertId();
+        return (int) $this->db->lastInsertId();
     }
 
-    public function update(Category $category)
+    public function update(Category $category): bool
     {
         $stmt = $this->db->prepare(
             "UPDATE categories SET 
@@ -77,7 +77,8 @@ class CategoryRepository
             'description' => $category->description
         ]);
     }
-    public function delete($id)
+
+    public function delete($id): bool
     {
         $stmt = $this->db->prepare("UPDATE categories SET deleted_at = NOW() WHERE id = :id");
         return $stmt->execute(['id' => $id]);

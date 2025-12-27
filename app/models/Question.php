@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 class Question
 {
     public $id;
@@ -24,11 +25,12 @@ class Question
         $this->deleted_at = $data["deleted_at"] ?? null;
     }
 
-    public function setOrder(int $ordre)
+    public function setOrder(int $ordre): void
     {
         $this->ordre = $ordre;
     }
-    public function setType(string $type)
+
+    public function setType(string $type): void
     {
         $this->type_question = $type;
     }

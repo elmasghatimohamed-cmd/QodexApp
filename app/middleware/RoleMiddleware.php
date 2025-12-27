@@ -1,29 +1,29 @@
 <?php
 
 namespace App\Middleware;
+
 use App\Helpers\Session;
 
 class RoleMiddleware
 {
-
-    public static function handle($requiredRole)
+    public static function handle($requiredRole): bool
     {
         Session::start();
 
         if (!Session::isLoggedIn()) {
-            Session::setError("Vous devez etre connecté d'abord pour accéder à cette page.");
+            Session::setError("Vous devez être connecté d'abord pour accéder à cette page.");
             header("Location: /login");
             exit;
         }
+
         $user = Session::getUser();
         $userRole = $user['role'] ?? null;
 
         if ($userRole !== $requiredRole) {
-            Session::setError("Accès Refusé. Vous n'avez pas les permission nécessaires pour accéder à cette page.");
+            Session::setError("Accès Refusé. Vous n'avez pas les permissions nécessaires pour accéder à cette page.");
             if ($userRole == 'enseignant') {
                 header("Location: /teacher/dashboard");
-            }
-            if ($userRole == "etudiant") {
+            } elseif ($userRole == "etudiant") {
                 header("Location: /student/dashboard");
             }
             exit;
@@ -31,12 +31,12 @@ class RoleMiddleware
         return true;
     }
 
-    public function requireTeacher()
+    public function requireTeacher(): bool
     {
         return self::handle("enseignant");
     }
 
-    public function requireStudent()
+    public function requireStudent(): bool
     {
         return self::handle("etudiant");
     }

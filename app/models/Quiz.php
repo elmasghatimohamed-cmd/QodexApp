@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 class Quiz
 {
     public $id;
@@ -28,11 +29,12 @@ class Quiz
         $this->deleted_at = $data["deleted_at"] ?? null;
     }
 
-    public function setStatus(string $status)
+    public function setStatus(string $status): void
     {
         $this->status = $status;
     }
-    public function setDuration(int $minutes)
+
+    public function setDuration(int $minutes): void
     {
         $this->duration = $minutes;
     }

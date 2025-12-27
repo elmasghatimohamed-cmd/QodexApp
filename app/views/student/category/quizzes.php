@@ -1,12 +1,14 @@
 <?php use App\Middleware\CSRFMiddleware; ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz — <?= htmlspecialchars($category->name) ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-slate-50 min-h-screen">
     <div class="max-w-6xl mx-auto py-10 px-4">
         <div class="flex items-center justify-between mb-6">
@@ -52,8 +54,8 @@
                             <td class="px-4 py-3 text-sm text-slate-900"><?= htmlspecialchars($quiz->title) ?></td>
                             <td class="px-4 py-3 text-sm text-slate-600"><?= htmlspecialchars($quiz->duration) ?> min</td>
                             <td class="px-4 py-3 text-right">
-                                <a href="/student/quiz/take?id=<?= (int)$quiz->id ?>"
-                                   class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700">
+                                <a href="/student/quiz/take?id=<?= (int) $quiz->id ?>"
+                                    class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700">
                                     Passer
                                 </a>
                             </td>
@@ -70,4 +72,5 @@
         <?php endif; ?>
     </div>
 </body>
+
 </html>

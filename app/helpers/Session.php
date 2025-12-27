@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Helpers;
+
 use PDOException;
+
 class Session
 {
-    public static function start()
+    public static function start(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             ini_set('session.cookie_httponly', 1);
@@ -23,55 +25,66 @@ class Session
             }
         }
     }
-    public static function regenerate()
+
+    public static function regenerate(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_regenerate_id(true);
         }
     }
-    public static function set($key, $value)
+
+    public static function set($key, $value): void
     {
         self::start();
         $_SESSION[$key] = $value;
     }
+
     public static function get($key, $default = null)
     {
         self::start();
         return $_SESSION[$key] ?? $default;
     }
-    public static function has($key)
+
+    public static function has($key): bool
     {
         self::start();
         return isset($_SESSION[$key]);
     }
-    public static function remove($key)
+
+    public static function remove($key): void
     {
         self::start();
         unset($_SESSION[$key]);
     }
-    public static function getUser()
+
+    public static function getUser(): ?array
     {
         return self::get('user');
     }
-    public static function setUser($user)
+
+    public static function setUser($user): void
     {
         self::set('user', $user);
     }
-    public static function isLoggedIn()
+
+    public static function isLoggedIn(): bool
     {
         return self::has('user') && self::get('user') !== null;
     }
-    public static function hasRole($role)
+
+    public static function hasRole($role): bool
     {
         $user = self::getUser();
         return $user && isset($user['role']) && $user['role'] === $role;
     }
-    public static function getUserId()
+
+    public static function getUserId(): ?int
     {
         $user = self::getUser();
         return $user['id'] ?? null;
     }
-    public static function setFlash($key, $message)
+
+    public static function setFlash($key, $message): void
     {
         self::start();
         if (!isset($_SESSION['flash'])) {
@@ -79,6 +92,7 @@ class Session
         }
         $_SESSION['flash'][$key] = $message;
     }
+
     public static function getFlash($key, $default = null)
     {
         self::start();
@@ -86,23 +100,28 @@ class Session
         unset($_SESSION['flash'][$key]);
         return $message;
     }
-    public static function setError($message)
+
+    public static function setError($message): void
     {
         self::setFlash('error', $message);
     }
-    public static function setSuccess($message)
+
+    public static function setSuccess($message): void
     {
         self::setFlash('success', $message);
     }
+
     public static function getError()
     {
         return self::getFlash('error');
     }
+
     public static function getSuccess()
     {
         return self::getFlash('success');
     }
-    public static function destroy()
+
+    public static function destroy(): void
     {
         self::start();
         $_SESSION = [];
@@ -113,7 +132,8 @@ class Session
 
         session_destroy();
     }
-    public static function cleanupExpiredSessions($db)
+
+    public static function cleanupExpiredSessions($db): void
     {
         try {
             $stmt = $db->prepare(
@@ -125,4 +145,3 @@ class Session
         }
     }
 }
-

@@ -21,7 +21,7 @@ class TeacherCategoryController extends BaseController
         $this->categories = new CategoryRepository($db);
     }
 
-    public function index()
+    public function index(): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('enseignant');
@@ -36,9 +36,8 @@ class TeacherCategoryController extends BaseController
         ]);
     }
 
-    public function showCreate()
+    public function showCreate(): void
     {
-
         AuthMiddleware::handle();
         RoleMiddleware::handle('enseignant');
 
@@ -48,9 +47,8 @@ class TeacherCategoryController extends BaseController
         ]);
     }
 
-    public function create()
+    public function create(): void
     {
-
         AuthMiddleware::handle();
         RoleMiddleware::handle('enseignant');
         CSRFMiddleware::handle();
@@ -67,17 +65,20 @@ class TeacherCategoryController extends BaseController
                 'description' => ['max:500']
             ])
         ) {
-            Session::setError('Les données sont invalide');
+            Session::setError('Les données sont invalides');
             $this->redirect('/teacher/categories/create');
         }
 
         $category = new Category($data);
-        $category->enseignat_id = Session::getUserId();
+        $category->enseignant_id = Session::getUserId();
         $this->categories->create($category);
-        Session::setSuccess('Catégorie créé avec success');
+
+        Session::setSuccess('Catégorie créée avec succès');
+        $this->redirect('/teacher/categories'); // redirection vers liste
     }
 
-    public function showEdit()
+
+    public function showEdit(): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('enseignant');
@@ -96,7 +97,7 @@ class TeacherCategoryController extends BaseController
         ]);
     }
 
-    public function update()
+    public function update(): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('enseignant');
@@ -132,7 +133,7 @@ class TeacherCategoryController extends BaseController
         $this->redirect('/teacher/categories');
     }
 
-    public function delete()
+    public function delete(): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('enseignant');
@@ -150,4 +151,3 @@ class TeacherCategoryController extends BaseController
         $this->redirect('/teacher/categories');
     }
 }
-

@@ -6,86 +6,282 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Enseignant</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .nav-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .link-btn {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #334155;
+            text-decoration: none;
+        }
+
+        .link-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: #ffffff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #7f1d1d;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #14532d;
+        }
+
+        /* Stats cards */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .stat-value {
+            margin-top: 8px;
+            font-size: 30px;
+            font-weight: 600;
+        }
+
+        /* Recent quizzes */
+        .panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .panel-header a {
+            font-size: 14px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .panel-header a:hover {
+            text-decoration: underline;
+        }
+
+        .panel-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quiz-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .quiz-item:first-child {
+            border-top: none;
+        }
+
+        .quiz-title {
+            font-weight: 600;
+        }
+
+        .quiz-meta {
+            font-size: 14px;
+            color: #475569;
+            margin-top: 4px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            align-self: flex-start;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-inactive {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        @media (max-width: 640px) {
+            .quiz-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-slate-50 min-h-screen">
-    <div class="max-w-6xl mx-auto py-10 px-4 space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<body>
+    <div class="container">
+
+        <div class="header">
             <div>
-                <h1 class="text-2xl font-semibold text-slate-900">Dashboard Enseignant</h1>
-                <p class="text-sm text-slate-600">Gestion des catégories, quiz et résultats.</p>
+                <h1>Dashboard Enseignant</h1>
+                <div class="subtitle">Gestion des catégories, quiz et résultats.</div>
             </div>
-            <div class="flex flex-wrap items-center gap-3">
-                <a href="/teacher/categories"
-                    class="rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50">Catégories</a>
-                <a href="/teacher/quizzes"
-                    class="rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50">Quiz</a>
-                <a href="/teacher/quizzes/results"
-                    class="rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50">Résultats</a>
+
+            <div class="nav-actions">
+                <a href="/teacher/categories" class="link-btn">Catégories</a>
+                <a href="/teacher/quizzes" class="link-btn">Quiz</a>
+                <a href="/teacher/quizzes/results" class="link-btn">Résultats</a>
+
                 <form method="POST" action="/logout">
                     <input type="hidden" name="csrf_token" value="<?= CSRFMiddleware::getToken(); ?>">
-                    <button type="submit"
-                        class="rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700">Déconnexion</button>
+                    <button type="submit" class="btn-danger">Déconnexion</button>
                 </form>
             </div>
         </div>
 
         <?php if (!empty($error)): ?>
-            <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-                <?= htmlspecialchars($error) ?>
-            </div>
+            <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
         <?php if (!empty($success)): ?>
-            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-                <?= htmlspecialchars($success) ?>
-            </div>
+            <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
         <?php endif; ?>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div class="text-sm text-slate-600">Total quiz</div>
-                <div class="mt-2 text-3xl font-semibold text-slate-900"><?= (int) $totalQuizzes ?></div>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total quiz</div>
+                <div class="stat-value"><?= (int) $totalQuizzes ?></div>
             </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div class="text-sm text-slate-600">Quiz actifs</div>
-                <div class="mt-2 text-3xl font-semibold text-slate-900"><?= (int) $activeQuizzes ?></div>
+            <div class="stat-card">
+                <div class="stat-label">Quiz actifs</div>
+                <div class="stat-value"><?= (int) $activeQuizzes ?></div>
             </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div class="text-sm text-slate-600">Catégories</div>
-                <div class="mt-2 text-3xl font-semibold text-slate-900"><?= (int) $totalCategories ?></div>
+            <div class="stat-card">
+                <div class="stat-label">Catégories</div>
+                <div class="stat-value"><?= (int) $totalCategories ?></div>
             </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div class="text-sm text-slate-600">Tentatives</div>
-                <div class="mt-2 text-3xl font-semibold text-slate-900"><?= (int) $totalAttempts ?></div>
+            <div class="stat-card">
+                <div class="stat-label">Tentatives</div>
+                <div class="stat-value"><?= (int) $totalAttempts ?></div>
             </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-                <h2 class="font-semibold text-slate-900">Quiz récents</h2>
-                <a href="/teacher/quizzes/create" class="text-sm font-medium text-blue-600 hover:underline">Créer un
-                    quiz</a>
+        <div class="panel">
+            <div class="panel-header">
+                <strong>Quiz récents</strong>
+                <a href="/teacher/quizzes/create">Créer un quiz</a>
             </div>
 
             <?php if (empty($recentQuizzes)): ?>
-                <div class="p-5 text-sm text-slate-700">Aucun quiz créé pour le moment.</div>
+                <div class="panel-body">
+                    <div class="quiz-item">
+                        <div class="quiz-meta">Aucun quiz créé pour le moment.</div>
+                    </div>
+                </div>
             <?php else: ?>
-                <div class="divide-y divide-slate-200">
+                <div class="panel-body">
                     <?php foreach ($recentQuizzes as $quiz): ?>
-                        <div class="flex items-start justify-between gap-4 p-5">
+                        <div class="quiz-item">
                             <div>
-                                <div class="font-semibold text-slate-900"><?= htmlspecialchars($quiz->title) ?></div>
-                                <div class="mt-1 text-sm text-slate-600">
-                                    Créé le <?= htmlspecialchars(date('d/m/Y', strtotime($quiz->created_at))) ?>
+                                <div class="quiz-title"><?= htmlspecialchars($quiz->title) ?></div>
+                                <div class="quiz-meta">
+                                    Créé le <?= date('d/m/Y', strtotime($quiz->created_at)) ?>
                                     <?php if ($quiz->duration): ?>
-                                        • Durée: <?= (int) $quiz->duration ?> min
+                                        • Durée <?= (int) $quiz->duration ?> min
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <span
-                                class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold <?= $quiz->status === 'actif' ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-700' ?>">
+
+                            <span class="badge <?= $quiz->status === 'actif' ? 'badge-active' : 'badge-inactive' ?>">
                                 <?= htmlspecialchars($quiz->status) ?>
                             </span>
                         </div>
@@ -93,6 +289,7 @@
                 </div>
             <?php endif; ?>
         </div>
+
     </div>
 </body>
 

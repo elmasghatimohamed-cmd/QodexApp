@@ -32,7 +32,7 @@ class StudentQuizController extends BaseController
         $this->studentAnswers = new StudentAnswerRepository($db);
     }
 
-    public function listActive()
+    public function listActive(): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('etudiant');
@@ -44,7 +44,7 @@ class StudentQuizController extends BaseController
         ]);
     }
 
-    public function take()
+    public function take(): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('etudiant');
@@ -75,7 +75,7 @@ class StudentQuizController extends BaseController
         ]);
     }
 
-    public function submit()
+    public function submit(): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('etudiant');
@@ -118,7 +118,7 @@ class StudentQuizController extends BaseController
 
             if ($question->type_question === 'reponse_courte') {
                 $reponseTexte = Security::sanitize($provided);
-                $isCorrect = false;
+                $isCorrect = false; // Pas de correction automatique pour les réponses courtes
             } else {
                 $answerId = (int) $provided;
                 $correctAnswers = $this->answers->findCorrectAnswersByQuestion($question->id);
@@ -153,4 +153,3 @@ class StudentQuizController extends BaseController
         $this->redirect('/student/results');
     }
 }
-

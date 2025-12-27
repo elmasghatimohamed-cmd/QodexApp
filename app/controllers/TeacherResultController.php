@@ -20,31 +20,20 @@ class TeacherResultController extends BaseController
         $this->quizzes = new QuizRepository($db);
     }
 
-    public function index()
+    public function show(int $quizId): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('enseignant');
 
         $enseignantId = Session::getUserId();
-        $quizId = (int) ($_GET['quiz_id'] ?? 0);
 
-        if ($quizId) {
-            $quiz = $this->quizzes->findById($quizId);
-            if (!$quiz || $quiz->enseignant_id !== $enseignantId) {
-                Session::setError("Quiz non autorisé.");
-                $this->redirect('/teacher/quizzes');
-            }
-            $attempts = $this->attempts->findByQuizForTeacher($quizId, $enseignantId, 20, 0);
-        } else {
-            $teacherQuizzes = $this->quizzes->findByEnseignant($enseignantId);
-            $attempts = [];
-            foreach ($teacherQuizzes as $quiz) {
-                $attempts = array_merge(
-                    $attempts,
-                    $this->attempts->findByQuizForTeacher($quiz->id, $enseignantId, 20, 0)
-                );
-            }
+        $quiz = $this->quizzes->findById($quizId);
+        if (!$quiz || $quiz->enseignant_id !== $enseignantId) {
+            Session::setError("Quiz non autorisé.");
+            $this->redirect('/teacher/quizzes');
         }
+
+        $attempts = $this->attempts->findByQuizForTeacher($quizId, $enseignantId, 20, 0);
 
         $this->view('teacher/quiz/results', [
             'attempts' => $attempts,
@@ -52,5 +41,5 @@ class TeacherResultController extends BaseController
             'success' => Session::getSuccess()
         ]);
     }
-}
 
+}

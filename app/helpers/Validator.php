@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Helpers;
+
 class Validator
 {
     private $errors = [];
-    public function validate($data, $rules)
+
+    public function validate($data, $rules): bool
     {
         $this->errors = [];
 
@@ -19,7 +21,8 @@ class Validator
 
         return empty($this->errors);
     }
-    private function applyRule($field, $value, $rule, $allData)
+
+    private function applyRule($field, $value, $rule, $allData): void
     {
         if (strpos($rule, ':') !== false) {
             [$rule, $param] = explode(':', $rule, 2);
@@ -71,13 +74,11 @@ class Validator
 
             case 'exists':
                 // Format: exists:table,column
-                [$table, $column] = explode(',', $param);
                 // Cette règle nécessite une connexion DB, à implémenter si nécessaire
                 break;
 
             case 'unique':
                 // Format: unique:table,column
-                [$table, $column] = explode(',', $param);
                 // Cette règle nécessite une connexion DB, à implémenter si nécessaire
                 break;
 
@@ -89,37 +90,44 @@ class Validator
                 break;
         }
     }
-    public function getErrors()
+
+    public function getErrors(): array
     {
         return $this->errors;
     }
-    public function getFieldErrors($field)
+
+    public function getFieldErrors($field): array
     {
         return $this->errors[$field] ?? [];
     }
-    public function hasErrors()
+
+    public function hasErrors(): bool
     {
         return !empty($this->errors);
     }
-    public static function validateEmail($email)
+
+    public static function validateEmail($email): bool
     {
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
-    public static function validateInteger($value)
+
+    public static function validateInteger($value): bool
     {
         return filter_var($value, FILTER_VALIDATE_INT) !== false;
     }
-    public static function validateFloat($value)
+
+    public static function validateFloat($value): bool
     {
         return filter_var($value, FILTER_VALIDATE_FLOAT) !== false;
     }
-    public static function sanitizeString($value)
+
+    public static function sanitizeString($value): string
     {
         return trim(strip_tags($value));
     }
-    public static function validateUrl($url)
+
+    public static function validateUrl($url): bool
     {
         return filter_var($url, FILTER_VALIDATE_URL) !== false;
     }
 }
-

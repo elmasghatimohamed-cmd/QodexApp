@@ -19,39 +19,50 @@ $GLOBALS['db'] = $db;
 
 $router = new Router();
 
-// Auth
-$router->post('/login', fn() => new AuthController($db))->login();
-$router->get('/register', fn() => new AuthController($db))->showRegisterForm();
-$router->post('/register', fn() => new AuthController($db))->register();
-$router->post('/login', fn() => new AuthController($db))->login();
+// ==================== Routes d'authentification ====================
+$router->get('/login', fn() => (new AuthController($db))->showLoginForm());
+$router->post('/login', fn() => (new AuthController($db))->login());
+$router->get('/register', fn() => (new AuthController($db))->showRegisterForm());
+$router->post('/register', fn() => (new AuthController($db))->register());
+$router->post('/logout', fn() => (new AuthController($db))->logout());
 
-// Teacher categories
-$router->get('/teacher/categories', fn() => new TeacherCategoryController($db))->index();
-$router->get('/teacher/categories/create', fn() => new TeacherCategoryController($db))->showCreate();
-$router->post('/teacher/categories/create', fn() => new TeacherCategoryController($db))->create();
-$router->get('/teacher/categories/edit', fn() => new TeacherCategoryController($db))->showEdit();
-$router->post('/teacher/categories/edit', fn() => new TeacherCategoryController($db))->update();
-$router->post('/teacher/categories/delete', fn() => new TeacherCategoryController($db))->delete();
+// ==================== ENSEIGNANT ====================
 
-// Teacher quizzes
-$router->get('/teacher/dashboard', fn() => new TeacherDashboardController($db))->index();
-$router->get('/teacher/quizzes', fn() => new TeacherQuizController($db))->index();
-$router->get('/teacher/quizzes/create', fn() => new TeacherQuizController($db))->showCreate();
-$router->post('/teacher/quizzes/create', fn() => new TeacherQuizController($db))->create();
-$router->get('/teacher/quizzes/edit', fn() => new TeacherQuizController($db))->showEdit();
-$router->post('/teacher/quizzes/edit', fn() => new TeacherQuizController($db))->update();
-$router->post('/teacher/quizzes/delete', fn() => new TeacherQuizController($db))->delete();
-$router->get('/teacher/quizzes/results', fn() => new TeacherResultController($db))->index();
+// Tableau de bord enseignant
+$router->get('/teacher/dashboard', fn() => (new TeacherDashboardController($db))->index());
 
-// Student
-$router->get('/student/dashboard', fn() => new StudentDashboardController($db))->index();
-$router->get('/student/quizzes', fn() => new StudentQuizController($db))->listActive();
-$router->get('/student/quiz/take', fn() => new StudentQuizController($db))->take();
-$router->post('/student/quiz/submit', fn() => new StudentQuizController($db))->submit();
-$router->get('/student/results', fn() => new StudentResultController($db))->index();
+// Gestion des catégories (NOTATION :param)
+$router->get('/teacher/categories', fn() => (new TeacherCategoryController($db))->index());
+$router->get('/teacher/categories/create', fn() => (new TeacherCategoryController($db))->showCreate());
+$router->post('/teacher/categories', fn() => (new TeacherCategoryController($db))->create());
+$router->get('/teacher/categories/edit/:id', fn($id) => (new TeacherCategoryController($db))->showEdit());
+$router->post('/teacher/categories/update/:id', fn($id) => (new TeacherCategoryController($db))->update());
+$router->post('/teacher/categories/delete/:id', fn($id) => (new TeacherCategoryController($db))->delete());
 
-// Default
+// Gestion des quizzes (NOTATION :param)
+$router->get('/teacher/quizzes', fn() => (new TeacherQuizController($db))->index());
+$router->get('/teacher/quizzes/create', fn() => (new TeacherQuizController($db))->showCreate());
+$router->post('/teacher/quizzes', fn() => (new TeacherQuizController($db))->create());
+$router->get('/teacher/quizzes/edit/:id', fn($id) => (new TeacherQuizController($db))->showEdit($id));
+$router->post('/teacher/quizzes/update/:id', fn($id) => (new TeacherQuizController($db))->update($id));
+$router->post('/teacher/quizzes/delete/:id', fn($id) => (new TeacherQuizController($db))->delete($id));
+$router->get('/teacher/quizzes/results/:id', fn($id) => (new TeacherResultController($db))->show($id));
+
+// ==================== ÉTUDIANT ====================
+
+// Tableau de bord étudiant
+$router->get('/student/dashboard', fn() => (new StudentDashboardController($db))->index());
+
+// Quiz étudiants
+$router->get('/student/quizzes', fn() => (new StudentQuizController($db))->listActive());
+$router->get('/student/quiz/take', fn() => (new StudentQuizController($db))->take());
+$router->post('/student/quiz/submit', fn() => (new StudentQuizController($db))->submit());
+
+// Résultats étudiants
+$router->get('/student/results', fn() => (new StudentResultController($db))->index());
+
+// ==================== Route par défaut ====================
 $router->get('/', fn() => header('Location: /login'));
 
-$router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-
+// ==================== Dispatch ====================
+$router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));

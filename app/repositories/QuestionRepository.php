@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+
 use App\Models\Question;
 use PDO;
 
@@ -13,7 +14,7 @@ class QuestionRepository
         $this->db = $db;
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         $stmt = $this->db->prepare("SELECT * FROM questions WHERE deleted_at IS NULL");
         $stmt->execute();
@@ -23,7 +24,8 @@ class QuestionRepository
         }
         return $questions;
     }
-    public function findById($id)
+
+    public function findById($id): ?Question
     {
         $stmt = $this->db->prepare("SELECT * FROM questions WHERE id = :id AND deleted_at IS NULL");
         $stmt->execute(['id' => $id]);
@@ -32,7 +34,7 @@ class QuestionRepository
         return $row ? new Question($row) : null;
     }
 
-    public function findByQuiz($quizId)
+    public function findByQuiz($quizId): array
     {
         $stmt = $this->db->prepare(
             "SELECT * FROM questions 
@@ -46,7 +48,8 @@ class QuestionRepository
         }
         return $questions;
     }
-    public function findByQuizAndType($quizId, $type)
+
+    public function findByQuizAndType($quizId, $type): array
     {
         $stmt = $this->db->prepare(
             "SELECT * FROM questions 
@@ -63,7 +66,8 @@ class QuestionRepository
         }
         return $questions;
     }
-    public function getTotalPointsByQuiz($quizId)
+
+    public function getTotalPointsByQuiz($quizId): int
     {
         $stmt = $this->db->prepare(
             "SELECT SUM(points) as total FROM questions 
@@ -71,10 +75,10 @@ class QuestionRepository
         );
         $stmt->execute(['quiz_id' => $quizId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'] ?? 0;
+        return (int) ($result['total'] ?? 0);
     }
 
-    public function create(Question $question)
+    public function create(Question $question): int
     {
         $stmt = $this->db->prepare(
             "INSERT INTO questions (quiz_id, text, type_question, points, ordre, created_at) 
@@ -89,10 +93,10 @@ class QuestionRepository
             'ordre' => $question->ordre
         ]);
 
-        return $this->db->lastInsertId();
+        return (int) $this->db->lastInsertId();
     }
 
-    public function update(Question $question)
+    public function update(Question $question): bool
     {
         $stmt = $this->db->prepare(
             "UPDATE questions SET 
@@ -112,7 +116,7 @@ class QuestionRepository
         ]);
     }
 
-    public function delete($id)
+    public function delete($id): bool
     {
         $stmt = $this->db->prepare("UPDATE questions SET deleted_at = NOW() WHERE id = :id");
         return $stmt->execute(['id' => $id]);

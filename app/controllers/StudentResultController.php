@@ -17,7 +17,7 @@ class StudentResultController extends BaseController
         $this->attempts = new StudentQuizRepository($db);
     }
 
-    public function index()
+    public function index(): void
     {
         AuthMiddleware::handle();
         RoleMiddleware::handle('etudiant');
@@ -41,4 +41,3 @@ class StudentResultController extends BaseController
         ]);
     }
 }
-

@@ -34,4 +34,3 @@ class StudentQuiz
         $this->pourcentage = $totalPoints > 0 ? ($score / $totalPoints) * 100 : 0;
     }
 }
-

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\User;
@@ -13,7 +14,7 @@ class UserRepository
         $this->db = $db;
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE deleted_at IS NULL");
         $stmt->execute();
@@ -35,8 +36,7 @@ class UserRepository
         return $users;
     }
 
-
-    public function findById($id)
+    public function findById($id): ?User
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id AND deleted_at IS NULL");
         $stmt->execute(['id' => $id]);
@@ -59,7 +59,7 @@ class UserRepository
         return null;
     }
 
-    public function findByEmail($email)
+    public function findByEmail($email): ?User
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email AND deleted_at IS NULL");
         $stmt->execute(['email' => $email]);
@@ -82,7 +82,7 @@ class UserRepository
         return null;
     }
 
-    public function findByRole($role)
+    public function findByRole($role): array
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE role = :role AND deleted_at IS NULL");
         $stmt->execute(['role' => $role]);
@@ -103,7 +103,8 @@ class UserRepository
         }
         return $users;
     }
-    public function create(User $user)
+
+    public function create(User $user): int
     {
         $stmt = $this->db->prepare(
             "INSERT INTO users (email, password, first_name, last_name, role, created_at) 
@@ -118,10 +119,10 @@ class UserRepository
             'role' => $user->role
         ]);
 
-        return $this->db->lastInsertId();
+        return (int) $this->db->lastInsertId();
     }
 
-    public function update(User $user)
+    public function update(User $user): bool
     {
         $stmt = $this->db->prepare(
             "UPDATE users SET 
@@ -144,16 +145,15 @@ class UserRepository
         ]);
     }
 
-    public function updateLastLogin($id)
+    public function updateLastLogin($id): bool
     {
         $stmt = $this->db->prepare("UPDATE users SET last_login = NOW() WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
 
-    public function delete($id)
+    public function delete($id): bool
     {
         $stmt = $this->db->prepare("UPDATE users SET deleted_at = NOW() WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
-
 }

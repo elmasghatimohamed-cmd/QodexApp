@@ -40,8 +40,11 @@ class StudentQuizRepository
              WHERE q.enseignant_id = :enseignant_id
                AND q.deleted_at IS NULL";
 
+        $params = [':enseignant_id' => $enseignantId];
+
         if ($quizId) {
             $sql .= " AND sq.quiz_id = :quiz_id";
+            $params[':quiz_id'] = $quizId;
         }
 
         $sql .= " ORDER BY sq.completed_at DESC LIMIT :limit OFFSET :offset";
@@ -66,6 +69,7 @@ class StudentQuizRepository
              WHERE q.enseignant_id = :enseignant_id
                AND q.deleted_at IS NULL";
         $params = ['enseignant_id' => $enseignantId];
+
         if ($quizId) {
             $sql .= " AND sq.quiz_id = :quiz_id";
             $params['quiz_id'] = $quizId;
@@ -74,7 +78,7 @@ class StudentQuizRepository
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (int)($row['total'] ?? 0);
+        return (int) ($row['total'] ?? 0);
     }
 
     /**
@@ -115,7 +119,7 @@ class StudentQuizRepository
         );
         $stmt->execute(['etudiant_id' => $etudiantId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (int)($row['total'] ?? 0);
+        return (int) ($row['total'] ?? 0);
     }
 
     public function averagePourcentageForStudent(int $etudiantId): float
@@ -127,7 +131,7 @@ class StudentQuizRepository
         );
         $stmt->execute(['etudiant_id' => $etudiantId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (float)($row['avg_p'] ?? 0);
+        return (float) ($row['avg_p'] ?? 0.0);
     }
 
     public function findRecentForStudentWithQuiz(int $etudiantId, int $limit = 5): array
@@ -254,4 +258,3 @@ class StudentQuizRepository
         ]);
     }
 }
-

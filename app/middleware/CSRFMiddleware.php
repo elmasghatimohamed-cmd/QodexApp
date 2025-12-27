@@ -1,16 +1,16 @@
 <?php
 
 namespace App\Middleware;
+
 use App\Helpers\Session;
 use App\Helpers\Security;
 
 class CSRFMiddleware
 {
-
-    public static function handle()
+    public static function handle(): bool
     {
         if ($_SERVER["REQUEST_METHOD"] === "GET") {
-            return True;
+            return true;
         }
 
         Session::start();
@@ -32,9 +32,8 @@ class CSRFMiddleware
         return true;
     }
 
-    public static function getToken()
+    public static function getToken(): string
     {
         return Security::generateCSRFToken();
     }
-
 }
