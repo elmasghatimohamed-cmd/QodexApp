@@ -1,3 +1,6 @@
 .env
 logs/
 vendor/
+test.php
+php_temp.ini
+start.bat
